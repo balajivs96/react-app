@@ -41,15 +41,32 @@ const NotFound = lazy(() =>
 const Dashboard = lazy(() =>
   import("../pages/Dashboard").then((module) => ({ default: module.Dashboard }))
 );
+
+const Checkout = lazy(() =>
+  import("../pages/Checkout").then((module) => ({ default: module.Checkout }))
+);
+
+const ProductDetails = lazy(() =>
+  import("../pages/ProductDetails").then((module) => ({
+    default: module.ProductDetails,
+  }))
+);
+
 const Profile = lazy(() => import("../pages/Profile"));
 
 // eslint-disable-next-line no-unused-vars
 const withSuspense = (Component) => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense
+    fallback={
+      <div className="container my-5 text-center">
+        <div className="spinner-border text-primary" role="status" />
+        <p className="mt-3">Loading...</p>
+      </div>
+    }
+  >
     <Component />
   </Suspense>
 );
-
 
 const router = createBrowserRouter([
   {
@@ -59,12 +76,13 @@ const router = createBrowserRouter([
       { path: "login", element: withSuspense(Login) },
       { path: "register", element: withSuspense(Register) },
       {
-        element: <AuthGuard />, // now renders <Outlet />
+        element: <AuthGuard />,
         children: [
-          { index: true, element: <Navigate to="profile" replace /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
           { path: "profile", element: withSuspense(Profile) },
           { path: "dashboard", element: withSuspense(Dashboard) },
-          // add more protected routes here
+          { path: "checkout", element: withSuspense(Checkout) },
+          { path: "product/:id", element: withSuspense(ProductDetails) },
         ],
       },
       { path: "*", element: withSuspense(NotFound) },

@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 export const Headers = ({ title, theme, toggleTheme }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -8,6 +9,7 @@ export const Headers = ({ title, theme, toggleTheme }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const cartItems = useSelector((state) => state.cart.items);
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     const checkAuth = () => setIsAuthenticated(!!token);
@@ -48,12 +50,18 @@ export const Headers = ({ title, theme, toggleTheme }) => {
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/profile">
-                    Home
+                    Profile
                   </Link>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">
                     Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/checkout">
+                    Checkout
+                    {cartItems.length > 0 ? `(${cartItems.length})` : ""}
                   </Link>
                 </li>
                 <li className="nav-item">

@@ -98,6 +98,7 @@ export const Headers = ({ title, theme, toggleTheme }) => {
               type="checkbox"
               role="switch"
               id="switchCheckDefault"
+              data-testid="theme-toggle" 
               onClick={toggleTheme}
             />
             {theme === "dark" ? (

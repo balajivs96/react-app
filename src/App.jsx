@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Outlet } from "react-router";
-import { Headers } from "./components/Headers";
-import "./App.css";
+import { Outlet } from 'react-router';
+import { Headers } from './components/Headers';
+import './App.css';
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState('light');
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };
   return (
     <>
-      <div className={`container-fluid theme-${theme}`} data-bs-theme={theme}>
+      <div
+        className={`container-fluid theme-${theme}`}
+        data-bs-theme={theme}
+        data-testid="app-container"
+      >
         <div className="row">
           <div className="col-sm-12">
             <Headers title="Amzkart" theme={theme} toggleTheme={toggleTheme} />

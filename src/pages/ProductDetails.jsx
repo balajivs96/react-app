@@ -35,6 +35,7 @@ export const ProductDetails = () => {
         if (isMounted) {
           setError(true);
         }
+        throw new Error(`Failed to fetch product: ${err.message}`);
       } finally {
         if (isMounted) {
           setLoading(false);

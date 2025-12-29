@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useParams, useNavigate } from "react-router";
-import { addItem } from "../stores/cartSlice";
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router';
+import { addItem } from '../stores/cartSlice';
 
 export const ProductDetails = () => {
   const { id } = useParams();
@@ -13,41 +13,16 @@ export const ProductDetails = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
 
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        setError(false);
+    fetch(`https://dummyjson.com/products/${id}`, { signal: controller.signal })
+      .then((res) => res.json())
+      .then((data) => setProduct(data))
+      .catch((err) => {
+        if (err.name !== 'AbortError') setError(true);
+      });
 
-        const res = await fetch(`https://dummyjson.com/products/${id}`);
-
-        if (!res.ok) {
-          throw new Error("Product not found");
-        }
-
-        const data = await res.json();
-
-        if (isMounted) {
-          setProduct(data);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(true);
-        }
-        throw new Error(`Failed to fetch product: ${err.message}`);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchProduct();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort(); // cancel fetch on unmount
   }, [id]);
 
   if (loading) {

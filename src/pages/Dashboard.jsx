@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "../components/Card";
 
 export const Dashboard = () => {
@@ -12,16 +12,15 @@ export const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  return (
-    <>
-      <div className="row">
-        {products?.products?.map((product) => (
-          <div key={product.id} className="col-md-2 mb-4 d-flex">
-            <Card item={product} />
-          </div>
-        ))}
+  const productCards = useMemo(() => {
+    return products?.products?.map((product) => (
+      <div key={product.id} className="col-md-2 mb-4 d-flex">
+        <Card item={product} />
       </div>
-    </>
-  );
+    ));
+  }, [products]); // only recompute if products change
+
+  if (loading) return <p>Loading...</p>;
+
+  return <div className="row">{productCards}</div>;
 };

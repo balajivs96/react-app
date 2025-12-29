@@ -1,5 +1,5 @@
-import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "../stores/cartSlice";
+import { useSelector, useDispatch } from 'react-redux';
+import { removeItem } from '../stores/cartSlice';
 
 export const Checkout = () => {
   const cartItems = useSelector((state) => state.cart.items);
@@ -17,7 +17,10 @@ export const Checkout = () => {
   return (
     <>
       {cartItems.length < 1 ? (
-        <h1>Cart is empty :-)</h1>
+        <div className="alert alert-info text-center">
+          <h3>Your cart is empty 🙂</h3>
+          <p>Add some items to proceed to checkout.</p>
+        </div>
       ) : (
         <div className="container">
           <div className="d-flex justify-content-end mb-3">
@@ -34,10 +37,10 @@ export const Checkout = () => {
                       alt={item.title}
                       className="img-fluid mb-2 mb-md-0"
                       style={{
-                        objectFit: "cover",
-                        width: "100%",
-                        maxWidth: "150px",
-                        height: "auto",
+                        objectFit: 'cover',
+                        width: '100%',
+                        maxWidth: '150px',
+                        height: 'auto',
                       }}
                     />
                   )}
@@ -46,7 +49,7 @@ export const Checkout = () => {
                     <h3 className="card-title">
                       {item.title} - {item.price}₹
                     </h3>
-                    {item.count && item.count > 1 && (
+                    {item.count && (
                       <p className="card-title">
                         {item.price}₹ x {item.count} = {item.price * item.count}
                         ₹

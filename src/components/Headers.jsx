@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 export const Headers = ({ title, theme, toggleTheme }) => {
+  const user = useSelector((state) => state.user);
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!sessionStorage.getItem("token")
   );
@@ -46,7 +47,7 @@ export const Headers = ({ title, theme, toggleTheme }) => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
-            {isAuthenticated && (
+            {isAuthenticated && user.isLogged && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/profile">

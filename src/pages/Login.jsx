@@ -1,28 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { login } from '../stores/userSlice';
 
 export const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const validateField = (name, value) => {
-    let error = "";
+    let error = '';
 
-    if (name === "email") {
-      if (!value) error = "Email is required";
-      else if (!/\S+@\S+\.\S+/.test(value)) error = "Enter valid email";
+    if (name === 'email') {
+      if (!value) error = 'Email is required';
+      else if (!/\S+@\S+\.\S+/.test(value)) error = 'Enter valid email';
     }
 
-    if (name === "password") {
-      if (!value) error = "Password is required";
+    if (name === 'password') {
+      if (!value) error = 'Password is required';
       else if (value.length < 6)
-        error = "Password must be at least 6 characters";
+        error = 'Password must be at least 6 characters';
     }
 
     return error;
@@ -53,23 +56,28 @@ export const Login = () => {
     e.preventDefault();
 
     const errors = {
-      email: validateField("email", formData.email),
-      password: validateField("password", formData.password),
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
     };
 
     setFormErrors(errors);
     setTouched({ email: true, password: true });
 
     if (!errors.email && !errors.password) {
-      console.log("Login successful", formData);
-      sessionStorage.setItem('token','x-access-token');
-      navigate('/profile')
+      dispatch(
+        login({
+          isLogged: true,
+          email: formData.email,
+        })
+      );
+      sessionStorage.setItem('token', 'x-access-token');
+      navigate('/profile');
     }
   };
 
   const isFormValid = () => {
-    const valuesValid = Object.values(formData).every((v) => v !== "");
-    const noErrors = Object.values(formErrors).every((e) => e === "");
+    const valuesValid = Object.values(formData).every((v) => v !== '');
+    const noErrors = Object.values(formErrors).every((e) => e === '');
     return valuesValid && noErrors;
   };
 
@@ -82,7 +90,7 @@ export const Login = () => {
               type="email"
               name="email"
               className={`form-control ${
-                touched.email && formErrors.email ? "is-invalid" : ""
+                touched.email && formErrors.email ? 'is-invalid' : ''
               }`}
               value={formData.email}
               onChange={handleChange}
@@ -100,7 +108,7 @@ export const Login = () => {
               type="password"
               name="password"
               className={`form-control ${
-                touched.password && formErrors.password ? "is-invalid" : ""
+                touched.password && formErrors.password ? 'is-invalid' : ''
               }`}
               value={formData.password}
               onChange={handleChange}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { login } from '../stores/userSlice';
+import { apiURL } from '../api/apiUrl';
 
 export const Login = () => {
   const [formData, setFormData] = useState({
@@ -11,9 +12,12 @@ export const Login = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [loginError, setLoginError] = useState(''); // Login error state
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Field validation
   const validateField = (name, value) => {
     let error = '';
 
@@ -43,6 +47,8 @@ export const Login = () => {
       ...prev,
       [name]: validateField(name, value),
     }));
+
+    setLoginError(''); // Clear login error while typing
   };
 
   const handleBlur = (e) => {
@@ -52,7 +58,8 @@ export const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // Form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const errors = {
@@ -64,17 +71,40 @@ export const Login = () => {
     setTouched({ email: true, password: true });
 
     if (!errors.email && !errors.password) {
-      dispatch(
-        login({
-          isLogged: true,
-          email: formData.email,
-        })
-      );
-      sessionStorage.setItem('token', 'x-access-token');
-      navigate('/profile');
+      try {
+        const res = await fetch(apiURL.login, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Successful login
+          sessionStorage.setItem('token', data.token); // store token if backend returns one
+
+          dispatch(
+            login({
+              isLogged: true,
+              email: formData.email,
+              id: data?._id,
+            })
+          );
+
+          navigate('/profile'); // Redirect on success
+        } else {
+          // Login failed
+          setLoginError(data.message || 'Invalid email or password');
+        }
+      } catch (err) {
+        console.error(err);
+        setLoginError('Something went wrong. Please try again later.');
+      }
     }
   };
 
+  // Check if form is valid for enabling submit button
   const isFormValid = () => {
     const valuesValid = Object.values(formData).every((v) => v !== '');
     const noErrors = Object.values(formErrors).every((e) => e === '');
@@ -85,6 +115,10 @@ export const Login = () => {
     <div className="container min-vh-100 d-flex justify-content-center align-items-center">
       <div className="col-md-5 col-lg-4">
         <form onSubmit={handleSubmit}>
+          {loginError && (
+            <div className="alert alert-danger text-center">{loginError}</div>
+          )}
+
           <div className="form-floating mb-3">
             <input
               type="email"

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import { addItem } from '../stores/cartSlice';
+import { apiURL } from '../api/apiUrl';
 
 export const ProductDetails = () => {
   const { id } = useParams();
@@ -15,14 +16,24 @@ export const ProductDetails = () => {
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch(`https://dummyjson.com/products/${id}`, { signal: controller.signal })
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
-      .catch((err) => {
+    const fetchProduct = async () => {
+      try {
+        // https://dummyjson.com/products/${id}
+        const res = await fetch(`${apiURL.products}/${id}`, {
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        setProduct(data);
+      } catch (err) {
         if (err.name !== 'AbortError') setError(true);
-      });
+      } finally {
+        setLoading(false); // always set loading to false
+      }
+    };
 
-    return () => controller.abort(); // cancel fetch on unmount
+    fetchProduct();
+
+    return () => controller.abort();
   }, [id]);
 
   if (loading) {
@@ -66,7 +77,7 @@ export const ProductDetails = () => {
             <div className="row g-0">
               <div className="col-md-5 text-center p-3">
                 <img
-                  src={product.thumbnail}
+                  src={product.image}
                   alt={product.title}
                   className="img-fluid rounded"
                 />
@@ -85,11 +96,11 @@ export const ProductDetails = () => {
                     onClick={() =>
                       dispatch(
                         addItem({
-                          id: product.id,
+                          id: product._id,
                           title: product.title,
                           price: product.price,
                           description: product.description,
-                          thumbnail: product.thumbnail,
+                          image: product.image,
                         })
                       )
                     }

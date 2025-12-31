@@ -1,26 +1,19 @@
-import { Link, useLocation, useNavigate } from "react-router";
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router";
 
 export const Headers = ({ title, theme, toggleTheme }) => {
   const user = useSelector((state) => state.user);
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!sessionStorage.getItem("token")
-  );
-  const location = useLocation();
+  const cartItems = useSelector((state) => state.cart.items);
   const navigate = useNavigate();
 
-  const cartItems = useSelector((state) => state.cart.items);
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const checkAuth = () => setIsAuthenticated(!!token);
-    checkAuth();
-  }, [location]);
+  const isAuthenticated = user?.isLogged; // ✅ check only Redux state
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    setIsAuthenticated(false);
-    navigate("/login");
+    // You can still clear the token from storage if needed
+    sessionStorage.removeItem('token');
+    // Dispatch logout action to reset Redux state
+    dispatch(logout()); // optional if you have a logout slice
+    navigate('/login');
   };
 
   return (
@@ -47,7 +40,7 @@ export const Headers = ({ title, theme, toggleTheme }) => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
-            {isAuthenticated && user.isLogged && (
+            {isAuthenticated ? (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/profile">
@@ -62,22 +55,20 @@ export const Headers = ({ title, theme, toggleTheme }) => {
                 <li className="nav-item">
                   <Link className="nav-link" to="/checkout">
                     Checkout
-                    {cartItems.length > 0 ? `(${cartItems.length})` : ""}
+                    {cartItems.length > 0 ? `(${cartItems.length})` : ''}
                   </Link>
                 </li>
                 <li className="nav-item">
                   <button
                     onClick={handleLogout}
                     className="nav-link btn btn-link"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                   >
                     Logout
                   </button>
                 </li>
               </>
-            )}
-
-            {!isAuthenticated && (
+            ) : (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login">
@@ -99,10 +90,9 @@ export const Headers = ({ title, theme, toggleTheme }) => {
               type="checkbox"
               role="switch"
               id="switchCheckDefault"
-              data-testid="theme-toggle" 
               onClick={toggleTheme}
             />
-            {theme === "dark" ? (
+            {theme === 'dark' ? (
               <i className="bi bi-moon"></i>
             ) : (
               <i className="bi bi-sun"></i>

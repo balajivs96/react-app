@@ -33,7 +33,7 @@ function Profile() {
                 <ul className="list-group list-group-flush">
                   {cart.items.map((item, index) => (
                     <li key={index} className="list-group-item">
-                      {item.title} - Quantity: {item.count}
+                      {item.title} - Quantity: {item.quantity}
                     </li>
                   ))}
                 </ul>

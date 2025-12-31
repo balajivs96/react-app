@@ -1,5 +1,6 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
+import { logout } from "../stores/userSlice";
 
 export const Headers = ({ title, theme, toggleTheme }) => {
   const user = useSelector((state) => state.user);
@@ -7,11 +8,9 @@ export const Headers = ({ title, theme, toggleTheme }) => {
   const navigate = useNavigate();
 
   const isAuthenticated = user?.isLogged; // ✅ check only Redux state
-
+  const dispatch = useDispatch();
   const handleLogout = () => {
-    // You can still clear the token from storage if needed
     sessionStorage.removeItem('token');
-    // Dispatch logout action to reset Redux state
     dispatch(logout()); // optional if you have a logout slice
     navigate('/login');
   };
@@ -56,6 +55,11 @@ export const Headers = ({ title, theme, toggleTheme }) => {
                   <Link className="nav-link" to="/checkout">
                     Checkout
                     {cartItems.length > 0 ? `(${cartItems.length})` : ''}
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/orders">
+                    Orders
                   </Link>
                 </li>
                 <li className="nav-item">

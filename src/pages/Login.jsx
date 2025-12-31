@@ -89,6 +89,7 @@ export const Login = () => {
               isLogged: true,
               email: formData.email,
               id: data?._id,
+              token: data.token,
             })
           );
 

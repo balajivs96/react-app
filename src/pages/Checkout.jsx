@@ -1,11 +1,12 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem } from '../stores/cartSlice';
+import { useNavigate } from 'react-router';
 
 export const Checkout = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const loggedInUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * (item.count || 1),
     0
@@ -25,7 +26,12 @@ export const Checkout = () => {
         user: loggedInUser.id,
       }),
     })
-      .then((res) => {})
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to place order');
+        }
+        navigate('/orders');
+      })
       .catch((err) => {
         console.error('Order placement failed:', err);
       });
@@ -67,8 +73,8 @@ export const Checkout = () => {
                     </h3>
                     {item.quantity && (
                       <p className="card-title">
-                        {item.price}₹ x {item.quantity} = {item.price * item.quantity}
-                        ₹
+                        {item.price}₹ x {item.quantity} ={' '}
+                        {item.price * item.quantity}₹
                       </p>
                     )}
 

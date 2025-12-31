@@ -52,6 +52,9 @@ const ProductDetails = lazy(() =>
   }))
 );
 
+const Orders = lazy(() =>
+  import("../pages/Orders").then((module) => ({ default: module.Orders }))
+);
 const Profile = lazy(() => import("../pages/Profile"));
 
 // eslint-disable-next-line no-unused-vars
@@ -82,6 +85,7 @@ const router = createBrowserRouter([
           { path: "profile", element: withSuspense(Profile) },
           { path: "dashboard", element: withSuspense(Dashboard) },
           { path: "checkout", element: withSuspense(Checkout) },
+          { path: "orders", element: withSuspense(Orders) },
           { path: "product/:id", element: withSuspense(ProductDetails) },
         ],
       },
